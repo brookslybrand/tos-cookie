@@ -8,6 +8,9 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 
+import { getCssText } from "~/stitches.config";
+import { TOSBanner } from "~/components/TOSBanner";
+
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
   title: "New Remix App",
@@ -20,8 +23,15 @@ export default function App() {
       <head>
         <Meta />
         <Links />
+
+        <style
+          id="stitches"
+          dangerouslySetInnerHTML={{ __html: getCssText() }}
+          suppressHydrationWarning
+        />
       </head>
       <body>
+        <TOSBanner />
         <Outlet />
         <ScrollRestoration />
         <Scripts />
