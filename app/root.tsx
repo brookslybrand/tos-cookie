@@ -1,4 +1,5 @@
-import type { MetaFunction } from "@remix-run/node";
+import type { LoaderArgs, MetaFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -6,10 +7,12 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from "@remix-run/react";
 
 import { getCssText } from "~/stitches.config";
 import { TOSBanner } from "~/components/TOSBanner";
+import { tosBannerCookie } from "./cookie.server";
 
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
@@ -17,7 +20,28 @@ export const meta: MetaFunction = () => ({
   viewport: "width=device-width,initial-scale=1",
 });
 
+export async function loader({ request }: LoaderArgs) {
+  const cookieHeader = request.headers.get("Cookie");
+  const cookie = await tosBannerCookie.parse(cookieHeader);
+
+  if (cookie) {
+    return json({ showTOSBanner: cookie.showTOSBanner });
+  }
+  return json(
+    { showTOSBanner: true },
+    {
+      headers: {
+        "Set-Cookie": await tosBannerCookie.serialize({
+          showTOSBanner: true,
+        }),
+      },
+    }
+  );
+}
+
 export default function App() {
+  const { showTOSBanner } = useLoaderData<typeof loader>();
+
   return (
     <html lang="en">
       <head>
@@ -31,7 +55,7 @@ export default function App() {
         />
       </head>
       <body>
-        <TOSBanner />
+        {showTOSBanner ? <TOSBanner /> : null}
         <Outlet />
         <ScrollRestoration />
         <Scripts />

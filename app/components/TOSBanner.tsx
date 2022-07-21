@@ -1,5 +1,5 @@
 import { styled } from "~/stitches.config";
-import { Form } from "@remix-run/react";
+import { Form, useLocation } from "@remix-run/react";
 
 import Button from "./base/Button";
 import Flex from "./base/Flex";
@@ -17,6 +17,8 @@ const formatDate = new Intl.DateTimeFormat(undefined, {
 }).format;
 
 export function TOSBanner() {
+  const { pathname, search } = useLocation();
+
   return (
     <Flex
       css={{
@@ -59,7 +61,8 @@ export function TOSBanner() {
           Privacy Policy.
         </TextLink>
       </Text>
-      <Form method="post">
+      <Form method="post" action="/hide-tos-banner" replace>
+        <input hidden name="redirectUrl" value={pathname + search} readOnly />
         <Button
           color="white"
           shape="regular"
@@ -68,7 +71,6 @@ export function TOSBanner() {
             paddingY: "$2",
             paddingX: "$4",
           }}
-          //onClick={handleClick}
         >
           Accept
         </Button>
