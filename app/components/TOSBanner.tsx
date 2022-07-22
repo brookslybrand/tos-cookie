@@ -1,14 +1,12 @@
 import { styled } from "~/stitches.config";
-import { Form, useLocation } from "@remix-run/react";
+import { useFetcher, useLocation } from "@remix-run/react";
 
 import Button from "./base/Button";
 import Flex from "./base/Flex";
 import Link from "./base/Link";
 import Text from "./base/Text";
 
-export const SHOW_TOS_BANNER: boolean = true as boolean;
-export const LAST_UPDATED_DATE_STRING = "07/11/2022"; // MM/DD/YYYY
-export const LAST_UPDATED_DATE = new Date(LAST_UPDATED_DATE_STRING);
+export const LAST_UPDATED_DATE = new Date("07/11/2022").valueOf();
 
 const formatDate = new Intl.DateTimeFormat(undefined, {
   day: "numeric",
@@ -18,6 +16,7 @@ const formatDate = new Intl.DateTimeFormat(undefined, {
 
 export function TOSBanner() {
   const { pathname, search } = useLocation();
+  const fetcher = useFetcher();
 
   return (
     <Flex
@@ -61,7 +60,7 @@ export function TOSBanner() {
           Privacy Policy.
         </TextLink>
       </Text>
-      <Form method="post" action="/hide-tos-banner" replace>
+      <fetcher.Form method="post" action="/hide-tos-banner">
         <input hidden name="redirectUrl" value={pathname + search} readOnly />
         <Button
           color="white"
@@ -74,7 +73,7 @@ export function TOSBanner() {
         >
           Accept
         </Button>
-      </Form>
+      </fetcher.Form>
     </Flex>
   );
 }

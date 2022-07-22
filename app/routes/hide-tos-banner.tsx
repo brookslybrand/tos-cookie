@@ -8,12 +8,12 @@ export async function loader() {
 }
 
 export async function action({ request }: ActionArgs) {
-  console.log(request);
   const redirectUrl = (await request.formData()).get("redirectUrl");
   return redirect(typeof redirectUrl === "string" ? redirectUrl : "/", {
     headers: {
       "Set-Cookie": await tosBannerCookie.serialize({
-        showTOSBanner: false,
+        // set the date that the TOS were read
+        dateTOSRead: new Date().valueOf(),
       }),
     },
   });

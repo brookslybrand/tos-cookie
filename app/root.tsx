@@ -11,7 +11,7 @@ import {
 } from "@remix-run/react";
 
 import { getCssText } from "~/stitches.config";
-import { TOSBanner } from "~/components/TOSBanner";
+import { LAST_UPDATED_DATE, TOSBanner } from "~/components/TOSBanner";
 import { tosBannerCookie } from "./cookie.server";
 
 export const meta: MetaFunction = () => ({
@@ -25,14 +25,14 @@ export async function loader({ request }: LoaderArgs) {
   const cookie = await tosBannerCookie.parse(cookieHeader);
 
   if (cookie) {
-    return json({ showTOSBanner: cookie.showTOSBanner });
+    return json({ showTOSBanner: cookie?.dateTOSRead < LAST_UPDATED_DATE });
   }
   return json(
     { showTOSBanner: true },
     {
       headers: {
         "Set-Cookie": await tosBannerCookie.serialize({
-          showTOSBanner: true,
+          dateTOSRead: 0,
         }),
       },
     }
